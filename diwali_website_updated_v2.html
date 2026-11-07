@@ -1,0 +1,1433 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>The Festival of Lights – Interactive Diwali Celebration</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Great+Vibes&family=Marcellus&family=Rozha+One&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            saffron: { 400: '#ff9933', 500: '#f97316', 600: '#ea580c' },
+            vermilion: '#e11d48',
+            maroon: { 800: '#4a0404', 900: '#2c0407', 950: '#1a0103' },
+            diwaliGold: { 300: '#fde047', 400: '#facc15', 500: '#eab308', 600: '#ca8a04' },
+            festiveCream: '#fdfbf7'
+          },
+          fontFamily: {
+            marcellus: ['Marcellus', 'serif'],
+            decorative: ['Cinzel Decorative', 'serif'],
+            script: ['Great Vibes', 'cursive'],
+            rozha: ['Rozha One', 'serif']
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    .mandala-bg {
+      background-color: #1a0204;
+      background-image: radial-gradient(circle at 50% 30%, rgba(249, 115, 22, 0.15) 0%, transparent 65%),
+        radial-gradient(circle at 10% 80%, rgba(225, 29, 72, 0.12) 0%, transparent 40%),
+        radial-gradient(circle at 90% 85%, rgba(234, 179, 8, 0.12) 0%, transparent 40%);
+    }
+    .diya-flame {
+      background: radial-gradient(ellipse at bottom, #ffffff 0%, #facc15 35%, #ea580c 75%, transparent 100%);
+      filter: drop-shadow(0 0 12px #f59e0b) drop-shadow(0 0 25px #ea580c);
+    }
+    .gold-gradient-text {
+      background: linear-gradient(135deg, #fffbeb 0%, #fef08a 25%, #facc15 50%, #d97706 75%, #fde047 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .gold-border {
+      border: 1px solid rgba(250, 204, 21, 0.35);
+      box-shadow: inset 0 0 20px rgba(245, 158, 11, 0.08), 0 8px 32px -4px rgba(0, 0, 0, 0.5);
+    }
+    .garland-border {
+      background: repeating-linear-gradient(90deg, #ea580c 0px, #ea580c 16px, #facc15 16px, #facc15 32px, #16a34a 32px, #16a34a 40px);
+      height: 6px;
+    }
+    #fireworksCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 40;
+    }
+    .festive-dock {
+      background: rgba(44, 4, 7, 0.94);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(250, 204, 21, 0.4);
+      box-shadow: 0 10px 40px -5px rgba(0, 0, 0, 0.8), 0 0 25px rgba(249, 115, 22, 0.25);
+    }
+    .color-palette-popover {
+      background: rgba(30, 3, 6, 0.98);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(250, 204, 21, 0.45);
+      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.85), 0 0 30px rgba(249, 115, 22, 0.3);
+    }
+    .sparkler-cursor-active {
+      cursor: crosshair;
+    }
+  </style>
+</head>
+<body class="bg-maroon-950 text-amber-50 font-marcellus selection:bg-saffron-500 selection:text-white min-h-screen relative overflow-x-hidden flex flex-col justify-between sparkler-cursor-active">
+
+<!-- Fireworks, Sparkler & Lanterns Canvas -->
+<canvas id="fireworksCanvas"></canvas>
+
+<!-- Top Header Navigation -->
+<header class="sticky top-0 z-50 backdrop-blur-md bg-maroon-950/85 border-b border-diwaliGold-500/25">
+  <div class="garland-border"></div>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+    <a href="#homepage" onclick="navigateTo('homepage')" class="flex items-center space-x-3 group cursor-pointer">
+      <div class="relative w-10 h-10 flex items-center justify-center">
+        <div class="absolute inset-0 bg-saffron-500/20 rounded-full blur-md group-hover:bg-saffron-500/40"></div>
+        <svg class="w-8 h-8 text-diwaliGold-400 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 2C11 4 9.5 5.5 9.5 7.5C9.5 9.5 10.5 10.5 12 11C13.5 10.5 14.5 9.5 14.5 7.5C14.5 5.5 13 4 12 2Z" fill="#facc15"/>
+          <path d="M4 14C4 18.5 7.5 21 12 21C16.5 21 20 18.5 20 14C20 13 18.5 13 18 13C12 15 8 13 6 13C5.5 13 4 13 4 14Z" fill="#ea580c"/>
+          <path d="M7 13.5C9 14.2 11.5 14.5 12 14.5C12.5 14.5 15 14.2 17 13.5C18 13.2 19.5 13.5 19.8 14.2C19.5 17.5 16.5 20 12 20C7.5 20 4.5 17.5 4.2 14.2C4.5 13.5 6 13.2 7 13.5Z" fill="#fbbf24"/>
+        </svg>
+      </div>
+      <div>
+        <span class="font-decorative text-xl sm:text-2xl tracking-wider gold-gradient-text block leading-none">SHUBH DIWALI</span>
+        <span class="text-[10px] tracking-widest text-amber-200/70 uppercase">Festival of Lights</span>
+      </div>
+    </a>
+
+    <!-- Nav buttons -->
+    <nav class="hidden md:flex items-center space-x-1 lg:space-x-3">
+      <button onclick="navigateTo('homepage')" id="nav-btn-homepage" class="nav-tab px-4 py-2 rounded-full text-sm font-semibold transition-all bg-saffron-500/30 text-white border border-diwaliGold-400/40">
+        <i class="w-4 h-4 inline-block mr-1.5 -mt-0.5" data-lucide="home"></i> Home
+      </button>
+      <button onclick="navigateTo('greetings')" id="nav-btn-greetings" class="nav-tab px-4 py-2 rounded-full text-sm font-semibold transition-all text-amber-200 hover:text-white hover:bg-saffron-500/20">
+        <i class="w-4 h-4 inline-block mr-1.5 -mt-0.5" data-lucide="mail-heart"></i> Create Greeting Card
+      </button>
+      <button onclick="navigateTo('origin')" id="nav-btn-origin" class="nav-tab px-4 py-2 rounded-full text-sm font-semibold transition-all text-amber-200 hover:text-white hover:bg-saffron-500/20">
+        <i class="w-4 h-4 inline-block mr-1.5 -mt-0.5" data-lucide="book-open"></i> Origin of Diwali
+      </button>
+    </nav>
+
+    <!-- Top Action Controls -->
+    <div class="flex items-center space-x-2 sm:space-x-2.5">
+      <!-- Sparkler Trail Toggle -->
+      <button id="topSparklerToggleBtn" onclick="toggleSparklerCursor()" class="hidden sm:flex items-center space-x-1.5 px-3 py-1.5 rounded-full border border-amber-500/40 bg-maroon-900/80 hover:bg-maroon-800 text-amber-200 text-xs transition-all shadow-sm" title="Toggle Phuljhadi (Sparkler) Mouse Trail">
+        <span class="text-sm">✨</span>
+        <span class="font-medium" id="topSparklerText">Sparkler: ON</span>
+      </button>
+
+      <!-- Firecracker SFX Toggle -->
+      <button id="sfxToggleBtn" onclick="toggleSfx()" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-full border border-amber-500/40 bg-maroon-900/80 hover:bg-maroon-800 text-amber-200 text-xs transition-all" title="Toggle Firecracker Sound Effects">
+        <i class="w-3.5 h-3.5 text-diwaliGold-400" data-lucide="sparkles" id="sfxIcon"></i>
+        <span class="font-medium hidden sm:inline" id="sfxText">SFX ON</span>
+      </button>
+
+      <!-- Music Toggle -->
+      <button id="musicToggleBtn" onclick="toggleAudio()" class="relative flex items-center space-x-2 px-3.5 py-1.5 rounded-full border border-diwaliGold-400/50 bg-maroon-900/90 hover:bg-maroon-800 text-amber-100 shadow-lg group transition-all" title="Toggle Background Music">
+        <span class="relative flex h-2.5 w-2.5">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-saffron-400 opacity-75" id="musicPing"></span>
+          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-saffron-500" id="musicDot"></span>
+        </span>
+        <i class="w-4 h-4 text-diwaliGold-400 group-hover:scale-110 transition-transform" data-lucide="volume-2" id="musicIcon"></i>
+        <span class="text-xs font-medium tracking-wide uppercase" id="musicText">Sound ON</span>
+        <span class="hidden xl:inline-block text-[10px] text-amber-300/60 font-mono pl-1 border-l border-amber-500/30" id="trackLabel">Raag Bhairavi</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Audio sources -->
+<audio id="audioRaagBhairavi" loop preload="auto">
+  <source src="assets/audio/Raag_Bhairavi.mp3" type="audio/mpeg"/>
+  <source src="Raag_Bhairavi.mp3" type="audio/mpeg"/>
+</audio>
+<audio id="audioJayShreeRam" loop preload="auto">
+  <source src="assets/audio/Jay_Shree_Ram.mp3" type="audio/mpeg"/>
+  <source src="Jay_Shree_Ram.mp3" type="audio/mpeg"/>
+</audio>
+
+<!-- Floating Festive Dock & Color Palette Popover -->
+<aside class="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 w-[96%] max-w-3xl">
+  <!-- Color Scheme Customiser Popover -->
+  <div id="colorPaletteModal" class="hidden color-palette-popover rounded-2xl p-4 sm:p-5 mb-3 border border-diwaliGold-400/50">
+    <div class="flex items-center justify-between pb-3 mb-3 border-b border-diwaliGold-500/20">
+      <div class="flex items-center space-x-2">
+        <span class="text-lg">🎨</span>
+        <div>
+          <h4 class="font-decorative text-sm sm:text-base text-amber-100 leading-tight">Firecracker Color Schemes</h4>
+          <p class="text-[11px] text-amber-300/70">Customise colors for fireworks, rockets, anaar fountains and chakri bursts</p>
+        </div>
+      </div>
+      <button onclick="toggleColorPaletteModal()" class="p-1 rounded-lg text-amber-300/60 hover:text-white hover:bg-maroon-800">
+        <i class="w-4 h-4" data-lucide="x"></i>
+      </button>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5" id="colorPresetButtonsContainer">
+      <!-- Preset 1: Royal Ayodhya Gold -->
+      <button onclick="selectColorPreset('royal-gold')" data-preset="royal-gold" class="palette-option-btn text-left p-2.5 rounded-xl border border-diwaliGold-400 bg-amber-500/20 ring-2 ring-diwaliGold-400 text-white transition-all flex items-center space-x-3">
+        <div class="flex -space-x-1.5 shrink-0">
+          <span class="w-4 h-4 rounded-full border border-amber-900" style="background:#fffbeb;"></span>
+          <span class="w-4 h-4 rounded-full border border-amber-900" style="background:#fde047;"></span>
+          <span class="w-4 h-4 rounded-full border border-amber-900" style="background:#facc15;"></span>
+          <span class="w-4 h-4 rounded-full border border-amber-900" style="background:#ea580c;"></span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <span class="block text-xs font-bold truncate">Royal Ayodhya Gold</span>
+          <span class="block text-[10px] text-amber-200/60 truncate">Brass, gold & champagne</span>
+        </div>
+        <i class="w-3.5 h-3.5 text-diwaliGold-300 checkmark shrink-0" data-lucide="check"></i>
+      </button>
+
+      <!-- Preset 2: Navrang Festive -->
+      <button onclick="selectColorPreset('navrang')" data-preset="navrang" class="palette-option-btn text-left p-2.5 rounded-xl border border-diwaliGold-500/30 bg-maroon-900/60 hover:bg-maroon-800 text-amber-100 transition-all flex items-center space-x-3">
+        <div class="flex -space-x-1.5 shrink-0">
+          <span class="w-4 h-4 rounded-full border border-amber-900" style="background:#e11d48;"></span>
+          <span class="w-4 h-4 rounded-full border border-amber-900" style="background:#f97316;"></span>
+          <span class="w-4 h-4 rounded-full border border-amber-900" style="background:#22c55e;"></span>
+          <span class="w-4 h-4 rounded-full border border-amber-900" style="background:#a855f7;"></span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <span class="block text-xs font-bold truncate">Navrang Festive</span>
+          <span class="block text-[10px] text-amber-200/60 truncate">Vibrant rainbow sparkle</span>
+        </div>
+        <i class="w-3.5 h-3.5 text-diwaliGold-300 checkmark hidden shrink-0" data-lucide="check"></i>
+      </button>
+
+      <!-- Preset 3: Surya Saffron & Vermilion -->
+      <button onclick="selectColorPreset('surya-saffron')" data-preset="surya-saffron" class="palette-option-btn text-left p-2.5 rounded-xl border border-diwaliGold-500/30 bg-maroon-900/60 hover:bg-maroon-800 text-amber-100 transition-all flex items-center space-x-3">
+        <div class="flex -space-x-1.5 shrink-0">
+          <span class="w-4 h-4 rounded-full border border-amber-900" style="background:#dc2626;"></span>
+          <span class="w-4 h-4 rounded-full border border-amber-900" style="background:#ea580c;"></span>
+          <span class="w-4 h-4 rounded-full border border-amber-900" style="background:#f97316;"></span>
+          <span class="w-4 h-4 rounded-full border border-amber-900" style="background:#fed7aa;"></span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <span class="block text-xs font-bold truncate">Surya Saffron</span>
+          <span class="block text-[10px] text-amber-200/60 truncate">Kumkum red & marigold</span>
+        </div>
+        <i class="w-3.5 h-3.5 text-diwaliGold-300 checkmark hidden shrink-0" data-lucide="check"></i>
+      </button>
+
+      <!-- Preset 4: Divine Peacock & Emerald -->
+      <button onclick="selectColorPreset('peacock-emerald')" data-preset="peacock-emerald" class="palette-option-btn text-left p-2.5 rounded-xl border border-diwaliGold-500/30 bg-maroon-900/60 hover:bg-maroon-800 text-amber-100 transition-all flex items-center space-x-3">
+        <div class="flex -space-x-1.5 shrink-0">
+          <span class="w-4 h-4 rounded-full border border-amber-900" style="background:#0284c7;"></span>
+          <span class="w-4 h-4 rounded-full border border-amber-900" style="background:#10b981;"></span>
+          <span class="w-4 h-4 rounded-full border border-amber-900" style="background:#06b6d4;"></span>
+          <span class="w-4 h-4 rounded-full border border-amber-900" style="background:#fde047;"></span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <span class="block text-xs font-bold truncate">Peacock & Emerald</span>
+          <span class="block text-[10px] text-amber-200/60 truncate">Ocean teal & emerald</span>
+        </div>
+        <i class="w-3.5 h-3.5 text-diwaliGold-300 checkmark hidden shrink-0" data-lucide="check"></i>
+      </button>
+
+      <!-- Preset 5: Celestial Violet & Magenta -->
+      <button onclick="selectColorPreset('violet-magenta')" data-preset="violet-magenta" class="palette-option-btn text-left p-2.5 rounded-xl border border-diwaliGold-500/30 bg-maroon-900/60 hover:bg-maroon-800 text-amber-100 transition-all flex items-center space-x-3 sm:col-span-2 md:col-span-1">
+        <div class="flex -space-x-1.5 shrink-0">
+          <span class="w-4 h-4 rounded-full border border-amber-900" style="background:#c026d3;"></span>
+          <span class="w-4 h-4 rounded-full border border-amber-900" style="background:#9333ea;"></span>
+          <span class="w-4 h-4 rounded-full border border-amber-900" style="background:#f43f5e;"></span>
+          <span class="w-4 h-4 rounded-full border border-amber-900" style="background:#fbcfe8;"></span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <span class="block text-xs font-bold truncate">Violet & Magenta</span>
+          <span class="block text-[10px] text-amber-200/60 truncate">Gulal magenta & rose</span>
+        </div>
+        <i class="w-3.5 h-3.5 text-diwaliGold-300 checkmark hidden shrink-0" data-lucide="check"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Dock Bar -->
+  <div class="festive-dock rounded-2xl sm:rounded-full p-2 sm:px-4 sm:py-2 flex items-center justify-between gap-1.5 sm:gap-2 shadow-2xl flex-wrap sm:flex-nowrap">
+    <!-- Release Sky Lantern -->
+    <button onclick="triggerSkyLantern()" class="flex items-center justify-center gap-1.5 sm:gap-2 py-2 px-2.5 sm:px-3 rounded-xl sm:rounded-full bg-gradient-to-r from-amber-600/80 to-saffron-600/90 hover:from-amber-500 hover:to-saffron-500 text-white font-medium text-xs sm:text-sm transition-all hover:scale-105 active:scale-95 shadow-md shrink-0">
+      <span class="text-base sm:text-lg">🏮</span>
+      <span class="whitespace-nowrap"><span class="hidden md:inline">Release </span>Lantern</span>
+    </button>
+
+    <!-- Anaar -->
+    <button onclick="triggerAnaar()" class="flex items-center justify-center gap-1 py-2 px-2.5 sm:px-3 rounded-xl sm:rounded-full bg-maroon-900/90 hover:bg-saffron-600/60 border border-diwaliGold-500/30 text-amber-200 hover:text-white text-xs sm:text-sm transition-all hover:scale-105 active:scale-95 shrink-0">
+      <span class="text-base sm:text-lg">🌋</span>
+      <span class="font-semibold">Anaar</span>
+    </button>
+
+    <!-- Chakri -->
+    <button onclick="triggerChakri()" class="flex items-center justify-center gap-1 py-2 px-2.5 sm:px-3 rounded-xl sm:rounded-full bg-maroon-900/90 hover:bg-saffron-600/60 border border-diwaliGold-500/30 text-amber-200 hover:text-white text-xs sm:text-sm transition-all hover:scale-105 active:scale-95 shrink-0">
+      <span class="text-base sm:text-lg">🌀</span>
+      <span class="font-semibold">Chakri</span>
+    </button>
+
+    <!-- Sky Rocket -->
+    <button onclick="triggerRocket()" class="flex items-center justify-center gap-1 py-2 px-2.5 sm:px-3 rounded-xl sm:rounded-full bg-maroon-900/90 hover:bg-saffron-600/60 border border-diwaliGold-500/30 text-amber-200 hover:text-white text-xs sm:text-sm transition-all hover:scale-105 active:scale-95 shrink-0">
+      <span class="text-base sm:text-lg">🚀</span>
+      <span class="font-semibold">Rocket</span>
+    </button>
+
+    <!-- Sparkler Cursor Switch -->
+    <button id="sparklerToolBtn" onclick="toggleSparklerCursor()" class="flex items-center justify-center gap-1 py-2 px-2.5 sm:px-3 rounded-xl sm:rounded-full bg-saffron-500 text-maroon-950 ring-2 ring-diwaliGold-400 font-semibold text-xs sm:text-sm transition-all hover:scale-105 active:scale-95 shrink-0" title="Toggle handheld phuljhadi sparkler trail">
+      <span class="text-base sm:text-lg">✨</span>
+      <span class="font-semibold" id="sparklerBtnText">Sparkler: ON</span>
+    </button>
+
+    <!-- Palette Customiser Button -->
+    <button id="paletteBtn" onclick="toggleColorPaletteModal()" class="flex items-center justify-center gap-1.5 py-2 px-2.5 sm:px-3 rounded-xl sm:rounded-full bg-gradient-to-r from-amber-700/80 to-maroon-900 border border-diwaliGold-400/50 hover:border-diwaliGold-300 text-amber-200 hover:text-white text-xs sm:text-sm transition-all hover:scale-105 active:scale-95 shrink-0" title="Customize Firecracker Color Scheme">
+      <span id="activePaletteDot" class="w-3.5 h-3.5 rounded-full border border-amber-300 shadow-sm" style="background: linear-gradient(135deg, #fffbeb, #fde047, #facc15, #ea580c);"></span>
+      <span class="font-semibold whitespace-nowrap hidden sm:inline">Palette</span>
+      <i class="w-3.5 h-3.5 text-diwaliGold-400" data-lucide="palette"></i>
+    </button>
+  </div>
+
+  <div class="text-center mt-1.5">
+    <span class="inline-block text-[11px] text-amber-300/80 bg-maroon-950/80 px-3 py-0.5 rounded-full border border-amber-500/20 backdrop-blur-sm pointer-events-none">
+      💡 Move mouse for Sparkler trail • Click anywhere on background to launch a firework!
+    </span>
+  </div>
+</aside>
+
+<!-- MAIN CONTAINER -->
+<main class="flex-grow relative pb-28">
+
+  <!-- SECTION 1: HOMEPAGE -->
+  <section id="homepage" class="app-section mandala-bg py-10 lg:py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+    <div class="max-w-7xl mx-auto relative z-10">
+      <div class="text-center max-w-3xl mx-auto mb-14 lg:mb-20">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-saffron-500/15 border border-diwaliGold-400/30 text-amber-300 text-xs tracking-widest uppercase mb-6">
+          <span>✨</span> असतो मा सद्गमय • तमसो मा ज्योतिर्गमय <span>✨</span>
+        </div>
+        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-decorative tracking-tight gold-gradient-text leading-tight mb-6">
+          Celebrate the Festival of Lights
+        </h1>
+        <p class="text-lg sm:text-xl text-amber-100/90 font-light leading-relaxed mb-4 max-w-2xl mx-auto">
+          "An occasion of light, love, hope and the eternal victory of good over evil."
+        </p>
+        <p class="text-sm text-amber-200/70 max-w-xl mx-auto">
+          Welcome to our interactive festive space. Choose your journey below to spread joy with personalized greetings or immerse yourself in the epic story of Lord Rama’s return.
+        </p>
+        <div class="flex items-center justify-center space-x-4 my-8">
+          <span class="h-px w-20 bg-gradient-to-r from-transparent to-diwaliGold-500/60"></span>
+          <div class="flex space-x-1.5 text-diwaliGold-400 text-base">
+            <span>✦</span><span>🪔</span><span>✦</span>
+          </div>
+          <span class="h-px w-20 bg-gradient-to-l from-transparent to-diwaliGold-500/60"></span>
+        </div>
+        <div>
+          <button onclick="triggerSkyLantern(window.innerWidth/2, window.innerHeight * 0.75)" class="px-5 py-2.5 rounded-full bg-gradient-to-r from-amber-500/20 via-saffron-500/30 to-amber-500/20 border border-diwaliGold-400/60 text-amber-200 text-xs sm:text-sm font-semibold hover:border-diwaliGold-400 hover:text-white transition-all shadow-lg flex items-center gap-2 mx-auto">
+            <span class="text-base">🏮</span>
+            <span>Light & Release an Akash Deep (आकाश दीप प्रज्वलन)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 2 PRIMARY OPTIONS -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 max-w-5xl mx-auto items-stretch">
+        <!-- Option 1: Create a Greetings Card -->
+        <div class="group relative rounded-3xl overflow-hidden bg-gradient-to-b from-maroon-900/90 via-maroon-900/60 to-maroon-950/95 gold-border transition-all duration-300 flex flex-col justify-between hover:shadow-2xl hover:shadow-saffron-500/15 hover:-translate-y-1.5">
+          <div class="p-8 sm:p-10 flex flex-col items-center text-center">
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-saffron-500 to-vermilion flex items-center justify-center shadow-lg mb-6">
+              <i class="w-7 h-7 text-amber-100" data-lucide="sparkles"></i>
+            </div>
+            <div class="w-full max-w-xs mb-6 rounded-2xl overflow-hidden p-4 bg-festiveCream border-2 border-diwaliGold-500/60 shadow-inner">
+              <div class="flex justify-between items-center text-[10px] text-amber-900/70 border-b border-amber-900/10 pb-1 mb-2">
+                <span>Dear Loved One,</span>
+                <span>Made with ❤️</span>
+              </div>
+              <div class="text-center py-3">
+                <div class="text-xs tracking-widest text-amber-800 font-semibold uppercase">HAPPY</div>
+                <div class="text-3xl font-rozha text-red-600 tracking-tight leading-none my-1">Diwali!</div>
+                <div class="text-[11px] text-amber-900/80 italic mt-2">Sending heartfelt wishes for light, joy and abundance...</div>
+              </div>
+              <div class="flex justify-end items-end mt-2">
+                <span class="text-xl">🪔</span>
+              </div>
+            </div>
+            <h2 class="text-2xl lg:text-3xl font-decorative text-amber-100 mb-3">Create a Greetings Card</h2>
+            <p class="text-amber-200/75 text-sm leading-relaxed mb-6">
+              Craft a personalised Diwali greeting with your recipient's and your name, rendered in an authentic traditional cream-gold rangoli artwork and downloadable as an HD image.
+            </p>
+          </div>
+          <div class="p-6 pt-0 bg-maroon-950/40 border-t border-diwaliGold-500/15">
+            <button onclick="navigateTo('greetings')" class="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-saffron-500 via-amber-500 to-saffron-600 text-maroon-950 font-bold text-base tracking-wider uppercase hover:shadow-xl transition-all flex items-center justify-center space-x-2">
+              <span>Create Your Diwali Card</span>
+              <i class="w-5 h-5" data-lucide="arrow-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Option 2: Discover the Origin of Diwali -->
+        <div class="group relative rounded-3xl overflow-hidden bg-gradient-to-b from-maroon-900/90 via-maroon-900/60 to-maroon-950/95 gold-border transition-all duration-300 flex flex-col justify-between hover:shadow-2xl hover:shadow-saffron-500/15 hover:-translate-y-1.5">
+          <div class="p-8 sm:p-10 flex flex-col items-center text-center">
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-600 to-maroon-800 flex items-center justify-center shadow-lg mb-6">
+              <i class="w-7 h-7 text-amber-200" data-lucide="scroll"></i>
+            </div>
+            <div class="w-full max-w-xs mb-6 rounded-2xl overflow-hidden border-2 border-diwaliGold-500/60 shadow-lg aspect-[16/10]">
+              <img src="https://lh3.googleusercontent.com/aida/ALJJyrCPG8mmQczgmtDDGUfuXoYiB64rZQZ8JKDJfnGC5k9cFhouQ13fp49Tr46qAEKw0w2ZCdwtu2FNg-MYntEDMaUffHxxQvMswiJYrvHbmMLA4FJUN2U79vfe9ke48uvD2ALqRQLf0VZ_vieVYvV2CAn25OSOLE66LQd9FyjlckHRvhgMDy3rRF04Pe5rM0NL0hCbCTKXaBKdtBPRann8u-7_k3qwsMHQdXDTn62ONnwC" alt="Lord Rama returning to Ayodhya" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"/>
+              <div class="bg-maroon-950/90 p-2 text-center text-[11px] text-amber-200 font-medium">Ayodhya Welcomes Its King</div>
+            </div>
+            <h2 class="text-2xl lg:text-3xl font-decorative text-amber-100 mb-3">Discover the Origin of Diwali</h2>
+            <p class="text-amber-200/75 text-sm leading-relaxed mb-6">
+              Journey through the Ramayana saga: from the fourteen-year forest exile, the battle against Ravana in Lanka, to the triumphant return illuminated by millions of earthen diyas.
+            </p>
+          </div>
+          <div class="p-6 pt-0 bg-maroon-950/40 border-t border-diwaliGold-500/15">
+            <button onclick="navigateTo('origin')" class="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-amber-600 via-saffron-600 to-vermilion text-white font-bold text-base tracking-wider uppercase hover:shadow-xl transition-all flex items-center justify-center space-x-2">
+              <span>Explore the Story</span>
+              <i class="w-5 h-5" data-lucide="book-open"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-16 text-center max-w-2xl mx-auto px-4 py-8 rounded-2xl bg-maroon-900/40 border border-diwaliGold-500/20">
+        <p class="text-sm sm:text-base text-amber-200/90 italic">
+          "Just as the people of Ayodhya lit countless diyas on Kartik Amavasya to guide Maryada Purushottam Rama home, let your heart kindle lamps of compassion, courage, and truth."
+        </p>
+        <div class="mt-3 text-xs tracking-widest text-diwaliGold-400 uppercase font-semibold">— The Spirit of Deepavali</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 2: GREETINGS CARD GENERATOR -->
+  <section id="greetings" class="app-section hidden mandala-bg py-10 lg:py-16 px-4 sm:px-6 lg:px-8 relative min-h-[85vh]">
+    <div class="max-w-6xl mx-auto relative z-10">
+      <div class="flex items-center justify-between mb-8 pb-4 border-b border-diwaliGold-500/20">
+        <button onclick="navigateTo('homepage')" class="inline-flex items-center space-x-2 text-sm text-amber-300 hover:text-white transition-colors">
+          <i class="w-4 h-4" data-lucide="arrow-left"></i>
+          <span>Back to Home</span>
+        </button>
+        <div class="text-xs text-amber-300/70 uppercase tracking-widest font-mono">Interactive Card Studio</div>
+      </div>
+
+      <div class="text-center max-w-2xl mx-auto mb-10">
+        <h2 class="text-3xl sm:text-4xl font-decorative gold-gradient-text mb-3">Create a Personalised Diwali Greeting</h2>
+        <p class="text-amber-200/80 text-sm">Enter your name and your recipient's name to generate an exquisite traditional greeting card. Download and share it instantly.</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+        <!-- Step 1: Form Inputs -->
+        <div class="lg:col-span-5 bg-maroon-900/80 rounded-3xl p-6 sm:p-8 gold-border shadow-xl">
+          <div class="flex items-center space-x-3 mb-6">
+            <span class="w-8 h-8 rounded-full bg-saffron-500 text-maroon-950 font-bold flex items-center justify-center text-sm">1</span>
+            <h3 class="text-xl font-decorative text-amber-100">Step 1: Enter Details</h3>
+          </div>
+          <form id="greetingForm" onsubmit="handleGenerateCard(event)" class="space-y-5">
+            <div>
+              <label class="block text-xs font-semibold uppercase tracking-wider text-amber-200 mb-2">Recipient's Name <span class="text-saffron-400">*</span></label>
+              <input type="text" id="recipientNameInput" maxlength="35" placeholder="e.g. Priya & Family" required class="w-full px-4 py-3 bg-maroon-950/80 border border-diwaliGold-500/40 rounded-xl text-white placeholder-amber-200/40 focus:outline-none focus:ring-2 focus:ring-saffron-500"/>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold uppercase tracking-wider text-amber-200 mb-2">Sender's Name <span class="text-saffron-400">*</span></label>
+              <input type="text" id="senderNameInput" maxlength="35" placeholder="e.g. Rahul Sharma" required class="w-full px-4 py-3 bg-maroon-950/80 border border-diwaliGold-500/40 rounded-xl text-white placeholder-amber-200/40 focus:outline-none focus:ring-2 focus:ring-saffron-500"/>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold uppercase tracking-wider text-amber-200 mb-2">Festive Greeting Wish</label>
+              <select id="greetingMessageSelect" onchange="updateGreetingMessage(this.value)" class="w-full px-4 py-2.5 bg-maroon-950/80 border border-diwaliGold-500/40 rounded-xl text-sm text-amber-100 focus:outline-none focus:ring-2 focus:ring-saffron-500">
+                <option value="Sending you my heartfelt wishes for a safe, peaceful, and prosperous Diwali.">"Sending you my heartfelt wishes for a safe, peaceful, and prosperous Diwali." (Standard)</option>
+                <option value="May the divine light of Diwali shine with peace, prosperity, happiness and good health in your life.">"May the divine light of Diwali shine with peace, prosperity and good health."</option>
+                <option value="May the Supreme Light illuminate your minds, enlighten your hearts, and strengthen the bonds in your home.">"May the Supreme Light illuminate your minds and strengthen your home."</option>
+              </select>
+            </div>
+            <div class="pt-4 space-y-3">
+              <button type="submit" class="w-full py-4 px-6 rounded-xl bg-gradient-to-r from-saffron-500 via-diwaliGold-500 to-saffron-600 text-maroon-950 font-bold text-sm tracking-wider uppercase hover:shadow-lg transition-all flex items-center justify-center space-x-2">
+                <i class="w-4 h-4" data-lucide="wand-2"></i>
+                <span>Generate My Diwali Card</span>
+              </button>
+              <button type="button" onclick="resetGreetingForm()" class="w-full py-2.5 px-4 rounded-xl border border-amber-500/30 text-amber-300 text-xs hover:bg-maroon-800/60 transition-colors">
+                Create Another Card / Reset Form
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Step 2: Live Card Preview & Download -->
+        <div class="lg:col-span-7 flex flex-col items-center">
+          <div class="w-full flex items-center justify-between mb-4">
+            <div class="flex items-center space-x-2">
+              <span class="w-6 h-6 rounded-full bg-diwaliGold-500 text-maroon-950 font-bold flex items-center justify-center text-xs">2</span>
+              <span class="text-sm font-semibold tracking-wide uppercase text-amber-200">Live Preview & Download</span>
+            </div>
+            <span class="text-[11px] px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> Live Dynamic
+            </span>
+          </div>
+
+          <!-- Greeting Card Visual -->
+          <div id="greetingCardWrapper" class="w-full max-w-lg bg-[#fdfaf3] text-[#4a2e18] rounded-2xl p-6 sm:p-8 relative overflow-hidden border-4 border-[#d4af37] select-none shadow-2xl">
+            <div class="flex justify-between items-start text-xs sm:text-sm pb-3 border-b border-[#b45309]/20 relative z-10">
+              <div>
+                <span class="text-[#78350f] block text-[10px] uppercase tracking-wider">To:</span>
+                <span id="cardRecipientText" class="font-bold text-[#451a03] text-base sm:text-lg break-words">Dear Loved Ones,</span>
+              </div>
+              <div class="text-right">
+                <span class="text-[#78350f] block text-[10px] uppercase tracking-wider">From:</span>
+                <span id="cardSenderTopText" class="font-semibold text-[#78350f] text-xs sm:text-sm italic">Made with Love</span>
+              </div>
+            </div>
+
+            <div class="py-6 sm:py-8 relative z-10 flex flex-col sm:flex-row justify-between items-center gap-6">
+              <div class="flex-1 text-left">
+                <div class="text-xs sm:text-sm font-semibold tracking-widest text-[#78350f] uppercase">H A P P Y</div>
+                <h1 class="text-5xl sm:text-6xl font-rozha text-[#dc2626] tracking-tight leading-none my-2 drop-shadow-sm">Diwali!</h1>
+                <p id="cardMessageText" class="text-xs sm:text-sm text-[#5c3a21] leading-relaxed mt-4 italic pr-2">
+                  "Sending you my heartfelt wishes for a safe, peaceful, and prosperous Diwali."
+                </p>
+              </div>
+              <div class="relative shrink-0 flex items-center justify-center">
+                <!-- Floral Rangoli SVG -->
+                <div class="w-36 h-36 sm:w-44 sm:h-44 relative">
+                  <svg class="w-full h-full drop-shadow-md" viewBox="0 0 200 200">
+                    <g fill="#ea580c">
+                      <circle cx="100" cy="30" r="16"/><circle cx="100" cy="170" r="16"/>
+                      <circle cx="30" cy="100" r="16"/><circle cx="170" cy="100" r="16"/>
+                      <circle cx="50" cy="50" r="14"/><circle cx="150" cy="50" r="14"/>
+                      <circle cx="50" cy="150" r="14"/><circle cx="150" cy="150" r="14"/>
+                    </g>
+                    <g fill="#e11d48">
+                      <circle cx="100" cy="45" r="12"/><circle cx="100" cy="155" r="12"/>
+                      <circle cx="45" cy="100" r="12"/><circle cx="155" cy="100" r="12"/>
+                    </g>
+                    <circle cx="100" cy="100" r="42" fill="#facc15" stroke="#ca8a04" stroke-width="3"/>
+                    <path d="M100 68 L108 92 L132 100 L108 108 L100 132 L92 108 L68 100 L92 92 Z" fill="#b45309"/>
+                    <circle cx="100" cy="100" r="12" fill="#fef08a"/>
+                    <circle cx="100" cy="100" r="5" fill="#e11d48"/>
+                  </svg>
+                  <div class="absolute -bottom-2 -right-2 flex flex-col items-center">
+                    <div class="w-4 h-6 diya-flame rounded-full"></div>
+                    <svg class="w-14 h-7 text-[#78350f]" fill="currentColor" viewBox="0 0 100 50">
+                      <path d="M5 20 Q50 60 95 20 Q80 15 50 25 Q20 15 5 20 Z" fill="#9a3412" stroke="#ea580c" stroke-width="2"/>
+                      <ellipse cx="50" cy="20" rx="35" ry="8" fill="#ca8a04"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="border-t border-[#b45309]/20 pt-3 flex justify-between items-end relative z-10">
+              <div>
+                <span class="text-[#78350f] text-xs block">Yours Lovingly,</span>
+                <span id="cardSenderBottomText" class="font-bold text-[#451a03] text-sm sm:text-base font-script tracking-wide">Your Name</span>
+              </div>
+              <div class="text-right">
+                <span class="text-[10px] text-[#92400e] tracking-widest uppercase font-serif">✨ Shubh Deepavali ✨</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="w-full max-w-lg mt-6 flex flex-col sm:flex-row gap-4">
+            <button onclick="downloadCardPNG()" class="flex-1 py-3.5 px-6 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold text-sm tracking-wider uppercase hover:shadow-lg transition-all flex items-center justify-center space-x-2">
+              <i class="w-4 h-4" data-lucide="download"></i>
+              <span>Download Greeting Card (PNG)</span>
+            </button>
+            <button onclick="copyGreetingLink()" class="py-3.5 px-5 rounded-xl bg-maroon-900 border border-diwaliGold-500/40 text-amber-200 text-sm hover:bg-maroon-800 transition-colors flex items-center justify-center space-x-1.5" title="Copy Card Wish Text">
+              <i class="w-4 h-4" data-lucide="share-2"></i>
+              <span>Share</span>
+            </button>
+          </div>
+          <div id="toastNotification" class="opacity-0 transition-opacity duration-300 mt-3 text-xs text-amber-300 font-mono"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 3: ORIGIN OF DIWALI -->
+  <section id="origin" class="app-section hidden mandala-bg py-10 lg:py-16 px-4 sm:px-6 lg:px-8 relative min-h-[90vh]">
+    <div class="max-w-5xl mx-auto relative z-10">
+      <div class="flex items-center justify-between mb-8 pb-4 border-b border-diwaliGold-500/20">
+        <button onclick="navigateTo('homepage')" class="inline-flex items-center space-x-2 text-sm text-amber-300 hover:text-white transition-colors">
+          <i class="w-4 h-4" data-lucide="arrow-left"></i>
+          <span>Return to Homepage</span>
+        </button>
+        <div class="flex items-center space-x-2 text-xs text-amber-300/80">
+          <i class="w-3.5 h-3.5 text-saffron-400" data-lucide="music"></i>
+          <span class="font-mono">Soundtrack: Ram Siya Ram</span>
+        </div>
+      </div>
+
+      <div class="text-center max-w-3xl mx-auto mb-14">
+        <div class="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-saffron-500/20 border border-diwaliGold-400/30 text-amber-300 text-xs tracking-widest uppercase mb-4">
+          Sacred Mythological Heritage
+        </div>
+        <h2 class="text-3xl sm:text-5xl font-decorative gold-gradient-text leading-tight mb-4">
+          The Origin of Diwali: The Ramayana Epic
+        </h2>
+        <p class="text-base sm:text-lg text-amber-100/90 leading-relaxed">
+          Diwali is the living memory of a divine return, celebrating the victory of Dharma over Adharma, light over deep gloom, and truth over deceit.
+        </p>
+      </div>
+
+      <!-- Story Chapters -->
+      <div class="space-y-16">
+        <!-- Chapter 1 -->
+        <div class="bg-maroon-900/60 rounded-3xl p-6 sm:p-10 gold-border shadow-2xl">
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+            <div class="md:col-span-5 rounded-2xl overflow-hidden border-2 border-diwaliGold-500/40 shadow-xl">
+              <img src="https://lh3.googleusercontent.com/aida/ALJJyrBNhSRdkoCb513b380zbqFBpqp6Uzv6elMbrAEN2NbNMeVmiFFqnfSyrrfalVeixmSF6vdHS7N4nIRl3Vwtalc5VuWIzB6_A1_I_piakvOEnz0rvAS1Oy0X7chSaHVsOUiW4yPCrJCSroBPszV3ldqtYnmQ1Hb4vW7JGoIIkfjWvBRDdGpwFF1Is5Vf0l6uu3EC4BPgIks3t4lbAZbx63i5bSwMqZrEURzDd_kcJnwV" alt="Lord Rama, Goddess Sita and Lakshmana in forest exile" class="w-full h-auto object-cover"/>
+              <div class="bg-maroon-950/90 p-2.5 text-center text-xs text-amber-200/80 italic">Lord Rama, Goddess Sita & Lakshmana in forest exile</div>
+            </div>
+            <div class="md:col-span-7 space-y-4">
+              <span class="px-3 py-1 rounded-full bg-saffron-500/20 text-diwaliGold-300 text-xs font-bold uppercase tracking-wider border border-saffron-500/30">Chapter I</span>
+              <h3 class="text-2xl sm:text-3xl font-decorative text-amber-100">The Exile of Lord Rama</h3>
+              <p class="text-amber-100/85 text-sm sm:text-base leading-relaxed">
+                Lord Rama, the beloved crown prince of Ayodhya and embodiment of righteousness (Maryada Purushottam), dutifully accepted fourteen long years of exile into the Dandakaranya forest without a trace of resentment. His devoted consort Goddess Sita and loyal brother Lakshmana accompanied him into the wilderness.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chapter 2 -->
+        <div class="bg-maroon-900/60 rounded-3xl p-6 sm:p-10 gold-border shadow-2xl">
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+            <div class="md:col-span-7 space-y-4">
+              <span class="px-3 py-1 rounded-full bg-vermilion/20 text-rose-300 text-xs font-bold uppercase tracking-wider border border-vermilion/30">Chapter II</span>
+              <h3 class="text-2xl sm:text-3xl font-decorative text-amber-100">The Abduction of Goddess Sita</h3>
+              <p class="text-amber-100/85 text-sm sm:text-base leading-relaxed">
+                While in the forest of Panchavati, Ravana abducted Goddess Sita by force and transported her to his fortress in Lanka. Lord Rama and Lakshmana journeyed south, forming an alliance with Sugriva and the devoted warrior Hanuman to cross the sea via the Ram Setu.
+              </p>
+            </div>
+            <div class="md:col-span-5 rounded-2xl bg-gradient-to-br from-maroon-950 via-maroon-900 to-amber-950/70 p-6 border-2 border-diwaliGold-500/40 text-center">
+              <div class="text-3xl mb-2">🏹</div>
+              <h4 class="font-decorative text-lg text-amber-100">The Quest for Dharma</h4>
+              <p class="text-xs text-amber-200/70 mt-2">"Faith and determination bridged the tempestuous sea as the Vanara army inscribed Rama's sacred name on every floating stone."</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chapter 3 -->
+        <div class="bg-maroon-900/60 rounded-3xl p-6 sm:p-10 gold-border shadow-2xl space-y-4">
+          <span class="px-3 py-1 rounded-full bg-amber-500/20 text-diwaliGold-300 text-xs font-bold uppercase tracking-wider border border-amber-500/30">Chapter III</span>
+          <h3 class="text-2xl sm:text-3xl font-decorative text-amber-100">The Victory Over Ravana</h3>
+          <p class="text-amber-100/85 text-sm sm:text-base leading-relaxed">
+            In a colossal war on the shores of Lanka, Lord Rama defeated Ravana with the Brahmashira weapon, restoring cosmic balance and rescuing Goddess Sita. Celebrated on Dussehra, twenty days before the return to Ayodhya!
+          </p>
+        </div>
+
+        <!-- Chapter 4 -->
+        <div class="bg-maroon-900/60 rounded-3xl p-6 sm:p-10 gold-border shadow-2xl">
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+            <div class="md:col-span-6 rounded-2xl overflow-hidden border-2 border-diwaliGold-500/40 shadow-xl">
+              <img src="https://lh3.googleusercontent.com/aida/ALJJyrCPG8mmQczgmtDDGUfuXoYiB64rZQZ8JKDJfnGC5k9cFhouQ13fp49Tr46qAEKw0w2ZCdwtu2FNg-MYntEDMaUffHxxQvMswiJYrvHbmMLA4FJUN2U79vfe9ke48uvD2ALqRQLf0VZ_vieVYvV2CAn25OSOLE66LQd9FyjlckHRvhgMDy3rRF04Pe5rM0NL0hCbCTKXaBKdtBPRann8u-7_k3qwsMHQdXDTn62ONnwC" alt="Pushpaka Vimana returning to Ayodhya" class="w-full h-auto object-cover"/>
+              <div class="bg-maroon-950/90 p-2 text-center text-xs text-amber-200/80 italic">The aerial arrival over Ayodhya ablaze with lamps</div>
+            </div>
+            <div class="md:col-span-6 space-y-4">
+              <span class="px-3 py-1 rounded-full bg-saffron-500/20 text-diwaliGold-300 text-xs font-bold uppercase tracking-wider border border-saffron-500/30">Chapter IV</span>
+              <h3 class="text-2xl sm:text-3xl font-decorative text-amber-100">The Return to Ayodhya</h3>
+              <p class="text-amber-100/85 text-sm sm:text-base leading-relaxed">
+                Returning on the moonless night of Kartik Amavasya, every citizen lit rows upon rows (Avali) of earthen lamps (Deepa) across balconies and river ghats to welcome Maryada Purushottam Rama home—birthing the eternal tradition of Deepavali.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chapter 5: Ayodhya Deepotsav Celebration Video -->
+        <div class="bg-gradient-to-b from-maroon-900/90 via-maroon-950 to-maroon-950 rounded-3xl p-6 sm:p-10 gold-border shadow-2xl">
+          <div class="text-center max-w-3xl mx-auto mb-8">
+            <span class="px-4 py-1 rounded-full bg-diwaliGold-500/20 text-diwaliGold-300 text-xs font-bold uppercase tracking-wider border border-diwaliGold-500/30">
+              Chapter V • Living Festival Today
+            </span>
+            <h3 class="text-3xl sm:text-4xl font-decorative gold-gradient-text mt-3 mb-3">
+              Ayodhya: Where Millions of Lights Illuminate the Night
+            </h3>
+            <p class="text-sm sm:text-base text-amber-200/80 leading-relaxed">
+              Experience the world-record breaking Ayodhya Deepotsav celebration, where over 2.5 million earthen diyas ignite the sacred Sarayu River ghats in an ethereal display of spiritual devotion.
+            </p>
+          </div>
+          <div class="max-w-4xl mx-auto rounded-2xl overflow-hidden border-2 border-diwaliGold-500/60 shadow-2xl bg-black relative">
+            <video id="deepotsavVideoPlayer" class="w-full aspect-video object-cover" controls playsinline preload="metadata" poster="https://lh3.googleusercontent.com/aida/ALJJyrCyj9aeFnqnPHEkk6fJHloejw0sAaLKBvKaAwGSNW8gKG31Hw9--QFfPUgXTsu4SIydAF0yjEhSV7pifZr3v_QUxN6fE0xkN44vpybJstEaT1tw_U4GU6kdUDStX_xRYrt3Fw5YpehMcHiqQWGElMOytOjwy8E7gpo4aZcK2u54K-q5cccQJfeYx0oHjUnE4mzFmo4tRbzjtZY4dw0HhSAjjwKJphIUTSwqWmOq-uDz">
+              <source src="assets/video/Ayodhya_Deepotsav.mp4" type="video/mp4"/>
+              <source src="Ayodhya_Deepotsav.mp4" type="video/mp4"/>
+              Your browser does not support the video tag.
+            </video>
+          </div>
+          <div class="text-center mt-8">
+            <button onclick="navigateTo('greetings')" class="py-3.5 px-8 rounded-full bg-gradient-to-r from-saffron-500 via-diwaliGold-500 to-saffron-600 text-maroon-950 font-bold text-sm tracking-wider uppercase hover:shadow-lg transition-all inline-flex items-center space-x-2">
+              <span>Send a Greeting Card to Loved Ones</span>
+              <i class="w-4 h-4" data-lucide="mail"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- Footer -->
+<footer class="bg-maroon-950 border-t border-diwaliGold-500/20 py-10 px-4 sm:px-6 relative z-20">
+  <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
+    <div class="flex items-center space-x-3">
+      <span class="text-2xl">🪔</span>
+      <div>
+        <span class="font-decorative text-lg text-diwaliGold-300 tracking-wider block">The Festival of Lights</span>
+        <span class="text-xs text-amber-200/60">An Interactive Cultural Celebration & Greeting Studio</span>
+      </div>
+    </div>
+    <div class="flex items-center space-x-6 text-xs text-amber-200/80">
+      <button onclick="navigateTo('homepage')" class="hover:text-diwaliGold-400">Home</button>
+      <button onclick="navigateTo('greetings')" class="hover:text-diwaliGold-400">Greetings Card</button>
+      <button onclick="navigateTo('origin')" class="hover:text-diwaliGold-400">Origin of Diwali</button>
+    </div>
+    <div class="text-xs text-amber-300/50">
+      May the divine light illuminate your path with joy and prosperity.
+    </div>
+  </div>
+</footer>
+
+<canvas id="exportCanvas" width="1200" height="750" class="hidden"></canvas>
+
+<!-- Interactive Script -->
+<script>
+  // Palettes for Firework Bursts & Rockets
+  const FIREWORK_PRESETS = {
+    'royal-gold': {
+      name: 'Royal Ayodhya Gold',
+      dotGradient: 'linear-gradient(135deg, #fffbeb, #fde047, #facc15, #ea580c)',
+      colors: ['#fffbeb', '#fef08a', '#fde047', '#facc15', '#eab308', '#ea580c', '#ffffff', '#fbbf24']
+    },
+    'navrang': {
+      name: 'Navrang Festive',
+      dotGradient: 'linear-gradient(135deg, #e11d48, #f97316, #22c55e, #a855f7)',
+      colors: ['#e11d48', '#f97316', '#ea580c', '#22c55e', '#38bdf8', '#a855f7', '#facc15', '#ffffff']
+    },
+    'surya-saffron': {
+      name: 'Surya Saffron & Vermilion',
+      dotGradient: 'linear-gradient(135deg, #dc2626, #ea580c, #f97316, #fed7aa)',
+      colors: ['#dc2626', '#b91c1c', '#ea580c', '#f97316', '#ffedd5', '#f59e0b', '#fed7aa', '#ffffff']
+    },
+    'peacock-emerald': {
+      name: 'Divine Peacock & Emerald',
+      dotGradient: 'linear-gradient(135deg, #0284c7, #10b981, #06b6d4, #fde047)',
+      colors: ['#0284c7', '#0369a1', '#10b981', '#059669', '#06b6d4', '#67e8f9', '#fde047', '#ffffff']
+    },
+    'violet-magenta': {
+      name: 'Celestial Violet & Magenta',
+      dotGradient: 'linear-gradient(135deg, #c026d3, #9333ea, #f43f5e, #fbcfe8)',
+      colors: ['#c026d3', '#a21caf', '#9333ea', '#7e22ce', '#f43f5e', '#fb7185', '#fbcfe8', '#ffffff']
+    }
+  };
+
+  const appState = {
+    currentSection: 'homepage',
+    soundEnabled: true,
+    sfxEnabled: true,
+    sparklerActive: true,
+    activePalettePreset: 'royal-gold',
+    currentTrack: 'Raag_Bhairavi',
+    recipientName: 'Dear Loved Ones,',
+    senderName: 'Made with Love',
+    greetingMessage: 'Sending you my heartfelt wishes for a safe, peaceful, and prosperous Diwali.'
+  };
+
+  function getActiveColors() {
+    return FIREWORK_PRESETS[appState.activePalettePreset].colors;
+  }
+
+  // Audio System
+  const audioRaag = document.getElementById('audioRaagBhairavi');
+  const audioJayShreeRam = document.getElementById('audioJayShreeRam');
+  let activeBackgroundAudio = audioRaag;
+  const musicToggleBtn = document.getElementById('musicToggleBtn');
+  const musicText = document.getElementById('musicText');
+  const musicPing = document.getElementById('musicPing');
+  const musicDot = document.getElementById('musicDot');
+  const trackLabel = document.getElementById('trackLabel');
+  const sfxToggleBtn = document.getElementById('sfxToggleBtn');
+  const sfxText = document.getElementById('sfxText');
+
+  let audioCtx = null;
+  function ensureAudioContext() {
+    if (!audioCtx) {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (AudioContext) {
+        audioCtx = new AudioContext();
+      }
+    }
+    if (audioCtx && audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+  }
+
+  function playRocketSfx() {
+    if (!appState.sfxEnabled) return;
+    ensureAudioContext();
+    if (!audioCtx) return;
+
+    const now = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(400, now);
+    osc.frequency.exponentialRampToValueAtTime(1400, now + 0.65);
+    g.gain.setValueAtTime(0.01, now);
+    g.gain.linearRampToValueAtTime(0.08, now + 0.3);
+    g.gain.exponentialRampToValueAtTime(0.001, now + 0.7);
+    osc.connect(g);
+    g.connect(audioCtx.destination);
+    osc.start(now);
+    osc.stop(now + 0.72);
+
+    setTimeout(() => {
+      if (!appState.sfxEnabled || !audioCtx) return;
+      const bTime = audioCtx.currentTime;
+      const boom = audioCtx.createOscillator();
+      const bg = audioCtx.createGain();
+      boom.type = 'sine';
+      boom.frequency.setValueAtTime(120, bTime);
+      boom.frequency.exponentialRampToValueAtTime(30, bTime + 0.6);
+      bg.gain.setValueAtTime(0.28, bTime);
+      bg.gain.exponentialRampToValueAtTime(0.001, bTime + 0.7);
+      boom.connect(bg);
+      bg.connect(audioCtx.destination);
+      boom.start(bTime);
+      boom.stop(bTime + 0.72);
+    }, 650);
+  }
+
+  function playAnaarSfx() {
+    if (!appState.sfxEnabled) return;
+    ensureAudioContext();
+    if (!audioCtx) return;
+    const now = audioCtx.currentTime;
+    const dur = 2.0;
+    const buffer = audioCtx.createBuffer(1, audioCtx.sampleRate * dur, audioCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < data.length; i++) {
+      data[i] = Math.random() > 0.85 ? (Math.random() * 2 - 1) * 1.2 : (Math.random() * 0.15 - 0.075);
+    }
+    const noise = audioCtx.createBufferSource();
+    noise.buffer = buffer;
+    const filter = audioCtx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(3400, now);
+    const gain = audioCtx.createGain();
+    gain.gain.setValueAtTime(0.02, now);
+    gain.gain.linearRampToValueAtTime(0.18, now + 0.3);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + dur);
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(audioCtx.destination);
+    noise.start(now);
+  }
+
+  function playChakriSfx() {
+    if (!appState.sfxEnabled) return;
+    ensureAudioContext();
+    if (!audioCtx) return;
+    const now = audioCtx.currentTime;
+    const dur = 2.2;
+    const osc = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(200, now);
+    osc.frequency.exponentialRampToValueAtTime(450, now + 0.5);
+    osc.frequency.exponentialRampToValueAtTime(220, now + dur);
+    g.gain.setValueAtTime(0.01, now);
+    g.gain.linearRampToValueAtTime(0.12, now + 0.2);
+    g.gain.exponentialRampToValueAtTime(0.001, now + dur);
+    osc.connect(g);
+    g.connect(audioCtx.destination);
+    osc.start(now);
+    osc.stop(now + dur);
+  }
+
+  let lastSparkSound = 0;
+  function playSparklerPop() {
+    if (!appState.sfxEnabled) return;
+    ensureAudioContext();
+    if (!audioCtx) return;
+    const now = audioCtx.currentTime;
+    if (now - lastSparkSound < 0.05) return;
+    lastSparkSound = now;
+    const osc = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(2500 + Math.random() * 2500, now);
+    g.gain.setValueAtTime(0.02, now);
+    g.gain.exponentialRampToValueAtTime(0.0001, now + 0.03);
+    osc.connect(g);
+    g.connect(audioCtx.destination);
+    osc.start(now);
+    osc.stop(now + 0.035);
+  }
+
+  function playLanternChime() {
+    if (!appState.sfxEnabled) return;
+    ensureAudioContext();
+    if (!audioCtx) return;
+    const now = audioCtx.currentTime;
+    [528, 1056].forEach((f, i) => {
+      const osc = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(f, now);
+      g.gain.setValueAtTime(0.05 / (i + 1), now);
+      g.gain.exponentialRampToValueAtTime(0.0001, now + 2.5);
+      osc.connect(g);
+      g.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 2.6);
+    });
+  }
+
+  function updateAudioTrack() {
+    const desiredAudio = appState.currentSection === 'origin'
+      ? audioJayShreeRam
+      : audioRaag;
+    const desiredLabel = appState.currentSection === 'origin'
+      ? 'Jay Shree Ram'
+      : 'Raag Bhairavi';
+
+    if (activeBackgroundAudio !== desiredAudio) {
+      const wasPlaying = !activeBackgroundAudio.paused;
+      activeBackgroundAudio.pause();
+      desiredAudio.currentTime = 0;
+      activeBackgroundAudio = desiredAudio;
+      if (!appState.soundEnabled || !wasPlaying) return;
+    }
+
+    if (!appState.soundEnabled) {
+      audioRaag.pause();
+      audioJayShreeRam.pause();
+      return;
+    }
+
+    trackLabel.textContent = desiredLabel;
+    if (activeBackgroundAudio.paused) {
+      activeBackgroundAudio.play().catch(() => {
+        // Browsers may block autoplay until the visitor interacts with the page.
+      });
+    }
+  }
+
+  function toggleAudio() {
+    appState.soundEnabled = !appState.soundEnabled;
+    if (appState.soundEnabled) {
+      musicText.textContent = "Sound ON";
+      musicPing.classList.remove('hidden');
+      musicDot.classList.replace('bg-gray-400', 'bg-saffron-500');
+      updateAudioTrack();
+    } else {
+      musicText.textContent = "Sound OFF";
+      musicPing.classList.add('hidden');
+      musicDot.classList.replace('bg-saffron-500', 'bg-gray-400');
+      audioRaag.pause();
+      audioJayShreeRam.pause();
+    }
+  }
+
+  function toggleSfx() {
+    appState.sfxEnabled = !appState.sfxEnabled;
+    sfxText.textContent = appState.sfxEnabled ? "SFX ON" : "SFX OFF";
+    showToast(appState.sfxEnabled ? "Firecracker SFX ON 🎆" : "Firecracker SFX OFF 🔇");
+  }
+
+  // High Performance 2D Fireworks & Sparkler Engine
+  const canvas = document.getElementById('fireworksCanvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  let sparklerParticles = [];
+  let lanterns = [];
+  let rockets = [];
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  // Sky Lantern
+  class SkyLantern {
+    constructor(x, y) {
+      this.x = x || Math.random() * canvas.width;
+      this.y = y || canvas.height + 40;
+      this.w = 26 + Math.random() * 16;
+      this.h = this.w * 1.35;
+      this.vx = (Math.random() - 0.5) * 0.6;
+      this.vy = -(0.8 + Math.random() * 0.8);
+      this.alpha = 0.95;
+      this.phase = Math.random() * 10;
+    }
+    update() {
+      this.phase += 0.03;
+      this.x += this.vx + Math.sin(this.phase) * 0.4;
+      this.y += this.vy;
+      if (this.y < canvas.height * 0.2) this.alpha -= 0.002;
+    }
+    draw() {
+      ctx.save();
+      ctx.translate(this.x, this.y);
+      const glow = ctx.createRadialGradient(0, 0, 2, 0, 0, this.w * 1.8);
+      glow.addColorStop(0, `rgba(250, 204, 21, ${this.alpha * 0.8})`);
+      glow.addColorStop(0.5, `rgba(234, 88, 12, ${this.alpha * 0.3})`);
+      glow.addColorStop(1, 'transparent');
+      ctx.fillStyle = glow;
+      ctx.beginPath();
+      ctx.arc(0, 0, this.w * 1.8, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = `rgba(234, 88, 12, ${this.alpha * 0.9})`;
+      ctx.strokeStyle = `rgba(254, 240, 138, ${this.alpha})`;
+      ctx.lineWidth = 1;
+      const hw = this.w / 2;
+      const hh = this.h / 2;
+      ctx.beginPath();
+      ctx.moveTo(-hw * 0.7, -hh);
+      ctx.lineTo(hw * 0.7, -hh);
+      ctx.lineTo(hw, 0);
+      ctx.lineTo(hw * 0.8, hh);
+      ctx.lineTo(-hw * 0.8, hh);
+      ctx.lineTo(-hw, 0);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(0, hh * 0.5, 3.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  // Particle
+  class Particle {
+    constructor(x, y, color, vx, vy, life = 75, size = 3, gravity = 0.04) {
+      this.x = x; this.y = y; this.color = color;
+      this.vx = vx; this.vy = vy; this.life = life; this.maxLife = life;
+      this.size = size; this.gravity = gravity;
+    }
+    update() {
+      this.x += this.vx; this.y += this.vy;
+      this.vy += this.gravity;
+      this.vx *= 0.985; this.vy *= 0.985;
+      this.life--;
+    }
+    draw() {
+      const p = this.life / this.maxLife;
+      ctx.globalAlpha = p;
+      ctx.fillStyle = this.color;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, Math.max(0.5, this.size * p), 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  // Sparkler (Phuljhadi) Particle
+  class SparklerSpark {
+    constructor(x, y, vx, vy, color, isSmoke = false) {
+      this.x = x; this.y = y; this.vx = vx; this.vy = vy;
+      this.color = color; this.isSmoke = isSmoke;
+      this.life = isSmoke ? (35 + Math.random() * 20) : (16 + Math.random() * 25);
+      this.maxLife = this.life;
+      this.size = isSmoke ? 3 : (1.4 + Math.random() * 2.2);
+    }
+    update() {
+      this.x += this.vx; this.y += this.vy;
+      this.vy += this.isSmoke ? -0.02 : 0.06;
+      this.vx *= 0.94; this.vy *= 0.94;
+      if (this.isSmoke) this.size += 0.08;
+      this.life--;
+    }
+    draw() {
+      const p = this.life / this.maxLife;
+      ctx.save();
+      if (this.isSmoke) {
+        ctx.globalAlpha = p * 0.2;
+        ctx.fillStyle = '#fed7aa';
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        ctx.globalAlpha = p;
+        ctx.fillStyle = this.color;
+        ctx.shadowColor = this.color;
+        ctx.shadowBlur = 6;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, Math.max(0.6, this.size * p), 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(this.x, this.y);
+        ctx.lineTo(this.x - this.vx * 2.2, this.y - this.vy * 2.2);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+  }
+
+  // Sky Rocket
+  class SkyRocket {
+    constructor(startX, startY, targetX, targetY) {
+      this.x = startX; this.y = startY;
+      this.targetY = targetY;
+      const dx = targetX - startX; const dy = targetY - startY;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      this.vx = (dx / dist) * 14;
+      this.vy = (dy / dist) * 14;
+      const colors = getActiveColors();
+      this.color = colors[Math.floor(Math.random() * colors.length)];
+      this.dead = false;
+      playRocketSfx();
+    }
+    update() {
+      this.x += this.vx; this.y += this.vy;
+      particles.push(new Particle(this.x, this.y + 4, '#facc15', (Math.random()-0.5)*1.5, Math.random()*2+1, 18, 2, 0.02));
+      if (this.y <= this.targetY) {
+        this.dead = true;
+        createFireworkBurst(this.x, this.y, this.color);
+      }
+    }
+    draw() {
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  function createFireworkBurst(x, y, forcedColor = null) {
+    const palette = getActiveColors();
+    const c1 = forcedColor || palette[Math.floor(Math.random() * palette.length)];
+    const c2 = palette[Math.floor(Math.random() * palette.length)];
+    const count = 75;
+    for (let i = 0; i < count; i++) {
+      const a = (Math.PI * 2 * i) / count;
+      const speed = 2.5 + Math.random() * 6;
+      particles.push(new Particle(x, y, i % 2 === 0 ? c1 : c2, Math.cos(a)*speed, Math.sin(a)*speed, 50 + Math.random()*40, 3, 0.06));
+    }
+  }
+
+  // Interactive triggers
+  function triggerAnaar(originX, originY) {
+    const x = originX || window.innerWidth * 0.25;
+    const y = originY || window.innerHeight - 30;
+    playAnaarSfx();
+    const preset = FIREWORK_PRESETS[appState.activePalettePreset];
+    showToast(`Anaar ignited with ${preset.name}! 🌋`);
+    let frame = 0;
+    const int = setInterval(() => {
+      frame++;
+      if (frame > 95) { clearInterval(int); return; }
+      const palette = getActiveColors();
+      for (let i = 0; i < 10; i++) {
+        const spread = (Math.random() - 0.5) * 3.5;
+        const up = -(5 + Math.random() * 11);
+        const col = palette[Math.floor(Math.random() * palette.length)];
+        particles.push(new Particle(x, y, col, spread, up, 40 + Math.random()*30, 2.5, 0.18));
+      }
+    }, 20);
+  }
+
+  function triggerChakri(originX, originY) {
+    const x = originX || window.innerWidth * 0.75;
+    const y = originY || window.innerHeight - 50;
+    playChakriSfx();
+    const preset = FIREWORK_PRESETS[appState.activePalettePreset];
+    showToast(`Chakri spinning with ${preset.name}! 🌀`);
+    let currentAngle = 0;
+    let frame = 0;
+    const int = setInterval(() => {
+      frame++;
+      if (frame > 100) { clearInterval(int); return; }
+      const palette = getActiveColors();
+      currentAngle += 0.45;
+      for (let i = 0; i < 4; i++) {
+        const a = currentAngle + (Math.PI * 2 * i) / 4;
+        const sp = 4 + Math.random() * 5;
+        const col = palette[(frame + i) % palette.length];
+        particles.push(new Particle(x, y, col, Math.cos(a)*sp, Math.sin(a)*sp, 35 + Math.random()*20, 2.5, 0.05));
+      }
+    }, 20);
+  }
+
+  function triggerRocket(startX, startY) {
+    const sx = startX || window.innerWidth * (0.2 + Math.random() * 0.6);
+    const sy = startY || window.innerHeight - 20;
+    rockets.push(new SkyRocket(sx, sy, sx + (Math.random()-0.5)*180, window.innerHeight * (0.15 + Math.random()*0.25)));
+    showToast("Sky Rocket launched! 🚀");
+  }
+
+  function triggerSkyLantern(x, y) {
+    lanterns.push(new SkyLantern(x, y));
+    playLanternChime();
+    showToast("Akash Deep released to the heavens! 🏮✨");
+  }
+
+  // Sparkler Cursor Trail Logic
+  const sparklerColors = ['#ffffff', '#fffbeb', '#fef08a', '#facc15', '#ea580c', '#fed7aa'];
+  function emitSparklerSparks(x, y, count = 7) {
+    for (let i = 0; i < count; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const v = 1 + Math.random() * 3.5;
+      const c = sparklerColors[Math.floor(Math.random() * sparklerColors.length)];
+      sparklerParticles.push(new SparklerSpark(x, y, Math.cos(a)*v, Math.sin(a)*v, c, false));
+    }
+    if (Math.random() > 0.5) {
+      sparklerParticles.push(new SparklerSpark(x, y, (Math.random()-0.5)*0.5, -0.6, '#fed7aa', true));
+    }
+    playSparklerPop();
+  }
+
+  window.addEventListener('pointermove', (e) => {
+    if (!appState.sparklerActive) return;
+    emitSparklerSparks(e.clientX, e.clientY, 5);
+  });
+
+  function toggleSparklerCursor() {
+    appState.sparklerActive = !appState.sparklerActive;
+    const btn = document.getElementById('sparklerToolBtn');
+    const text = document.getElementById('sparklerBtnText');
+    const topText = document.getElementById('topSparklerText');
+    if (appState.sparklerActive) {
+      document.body.classList.add('sparkler-cursor-active');
+      btn.className = "flex items-center justify-center gap-1 py-2 px-2.5 sm:px-3 rounded-xl sm:rounded-full bg-saffron-500 text-maroon-950 ring-2 ring-diwaliGold-400 font-semibold text-xs sm:text-sm transition-all hover:scale-105 active:scale-95 shrink-0";
+      text.textContent = "Sparkler: ON";
+      if (topText) topText.textContent = "Sparkler: ON";
+      showToast("Phuljhadi Sparkler trail active! ✨");
+    } else {
+      document.body.classList.remove('sparkler-cursor-active');
+      btn.className = "flex items-center justify-center gap-1 py-2 px-2.5 sm:px-3 rounded-xl sm:rounded-full bg-maroon-900/90 hover:bg-saffron-600/60 border border-diwaliGold-500/30 text-amber-200 hover:text-white text-xs sm:text-sm transition-all hover:scale-105 active:scale-95 shrink-0";
+      text.textContent = "Sparkler: OFF";
+      if (topText) topText.textContent = "Sparkler: OFF";
+      showToast("Sparkler trail paused 🪔");
+    }
+  }
+
+  // Firecracker Color Scheme Modal
+  function toggleColorPaletteModal() {
+    document.getElementById('colorPaletteModal').classList.toggle('hidden');
+  }
+
+  function selectColorPreset(presetKey) {
+    if (!FIREWORK_PRESETS[presetKey]) return;
+    appState.activePalettePreset = presetKey;
+    const preset = FIREWORK_PRESETS[presetKey];
+    document.getElementById('activePaletteDot').style.background = preset.dotGradient;
+
+    document.querySelectorAll('.palette-option-btn').forEach(btn => {
+      const key = btn.getAttribute('data-preset');
+      const check = btn.querySelector('.checkmark');
+      if (key === presetKey) {
+        btn.className = "palette-option-btn text-left p-2.5 rounded-xl border border-diwaliGold-400 bg-amber-500/20 ring-2 ring-diwaliGold-400 text-white transition-all flex items-center space-x-3";
+        if (check) check.classList.remove('hidden');
+      } else {
+        btn.className = "palette-option-btn text-left p-2.5 rounded-xl border border-diwaliGold-500/30 bg-maroon-900/60 hover:bg-maroon-800 text-amber-100 transition-all flex items-center space-x-3";
+        if (check) check.classList.add('hidden');
+      }
+    });
+
+    createFireworkBurst(window.innerWidth / 2, window.innerHeight * 0.35);
+    playRocketSfx();
+    showToast(`Selected Palette: "${preset.name}"! 🎨✨`);
+    setTimeout(() => {
+      document.getElementById('colorPaletteModal').classList.add('hidden');
+    }, 500);
+  }
+
+  // Click on background for fireworks
+  window.addEventListener('click', (e) => {
+    if (e.target.closest('button, input, select, a, #greetingCardWrapper, #colorPaletteModal, video')) {
+      return;
+    }
+    if (appState.sparklerActive) {
+      emitSparklerSparks(e.clientX, e.clientY, 16);
+    }
+    rockets.push(new SkyRocket(
+      e.clientX + (Math.random()-0.5)*80,
+      window.innerHeight - 20,
+      e.clientX,
+      e.clientY
+    ));
+  });
+
+  // Main Animation Loop
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Lanterns
+    for (let i = lanterns.length - 1; i >= 0; i--) {
+      lanterns[i].update();
+      lanterns[i].draw();
+      if (lanterns[i].alpha <= 0 || lanterns[i].y < -60) lanterns.splice(i, 1);
+    }
+
+    // Rockets
+    for (let i = rockets.length - 1; i >= 0; i--) {
+      rockets[i].update();
+      rockets[i].draw();
+      if (rockets[i].dead) rockets.splice(i, 1);
+    }
+
+    // Standard Firework Particles
+    for (let i = particles.length - 1; i >= 0; i--) {
+      particles[i].update();
+      particles[i].draw();
+      if (particles[i].life <= 0) particles.splice(i, 1);
+    }
+
+    // Sparkler Particles
+    for (let i = sparklerParticles.length - 1; i >= 0; i--) {
+      sparklerParticles[i].update();
+      sparklerParticles[i].draw();
+      if (sparklerParticles[i].life <= 0) sparklerParticles.splice(i, 1);
+    }
+
+    requestAnimationFrame(animate);
+  }
+  requestAnimationFrame(animate);
+
+  // Background Ambient Lanterns
+  setInterval(() => {
+    if (lanterns.length < 5) {
+      lanterns.push(new SkyLantern());
+    }
+  }, 4500);
+
+  // Section Navigation
+  function navigateTo(sectionId) {
+    document.querySelectorAll('.app-section').forEach(s => s.classList.add('hidden'));
+    const target = document.getElementById(sectionId);
+    if (target) target.classList.remove('hidden');
+    appState.currentSection = sectionId;
+
+    document.querySelectorAll('.nav-tab').forEach(b => {
+      b.classList.remove('bg-saffron-500/30', 'text-white', 'border', 'border-diwaliGold-400/40');
+      b.classList.add('text-amber-200');
+    });
+    const activeBtn = document.getElementById(`nav-btn-${sectionId}`);
+    if (activeBtn) {
+      activeBtn.classList.add('bg-saffron-500/30', 'text-white', 'border', 'border-diwaliGold-400/40');
+      activeBtn.classList.remove('text-amber-200');
+    }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    updateAudioTrack();
+  }
+
+  // Greeting Card Handlers
+  function handleGenerateCard(e) {
+    e.preventDefault();
+    const to = document.getElementById('recipientNameInput').value.trim();
+    const from = document.getElementById('senderNameInput').value.trim();
+    if (!to || !from) return;
+
+    appState.recipientName = to;
+    appState.senderName = from;
+    document.getElementById('cardRecipientText').textContent = to;
+    document.getElementById('cardSenderTopText').textContent = `Made by ${from}`;
+    document.getElementById('cardSenderBottomText').textContent = from;
+
+    createFireworkBurst(window.innerWidth / 2, window.innerHeight * 0.4);
+    playRocketSfx();
+    showToast("Greeting card successfully generated! 🪔✨");
+  }
+
+  function updateGreetingMessage(msg) {
+    appState.greetingMessage = msg;
+    document.getElementById('cardMessageText').textContent = `"${msg}"`;
+  }
+
+  function resetGreetingForm() {
+    document.getElementById('greetingForm').reset();
+    document.getElementById('cardRecipientText').textContent = "Dear Loved Ones,";
+    document.getElementById('cardSenderTopText').textContent = "Made with Love";
+    document.getElementById('cardSenderBottomText').textContent = "Your Name";
+    document.getElementById('cardMessageText').textContent = '"Sending you my heartfelt wishes for a safe, peaceful, and prosperous Diwali."';
+    showToast("Form reset. Enter new details!");
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toastNotification');
+    if (!t) return;
+    t.textContent = msg;
+    t.classList.remove('opacity-0');
+    setTimeout(() => t.classList.add('opacity-0'), 2800);
+  }
+
+  function copyGreetingLink() {
+    navigator.clipboard?.writeText(window.location.href);
+    showToast("Festival link copied to clipboard! ✨");
+  }
+
+  // Download Greeting Card as PNG via Offscreen Canvas
+  function downloadCardPNG() {
+    const c = document.getElementById('exportCanvas');
+    const cx = c.getContext('2d');
+    cx.fillStyle = '#fdfaf3';
+    cx.fillRect(0, 0, c.width, c.height);
+
+    cx.strokeStyle = '#d4af37';
+    cx.lineWidth = 14;
+    cx.strokeRect(10, 10, c.width - 20, c.height - 20);
+
+    cx.strokeStyle = '#ca8a04';
+    cx.lineWidth = 2;
+    cx.strokeRect(26, 26, c.width - 52, c.height - 52);
+
+    cx.fillStyle = '#78350f';
+    cx.font = '16px Marcellus, serif';
+    cx.fillText('TO: ' + appState.recipientName, 60, 90);
+
+    cx.textAlign = 'right';
+    cx.fillText('FROM: ' + appState.senderName, c.width - 60, 90);
+
+    cx.textAlign = 'left';
+    cx.font = 'bold 24px Marcellus, serif';
+    cx.fillText('H A P P Y', 60, 240);
+
+    cx.fillStyle = '#dc2626';
+    cx.font = 'bold 96px Rozha One, serif';
+    cx.fillText('Diwali!', 60, 340);
+
+    cx.fillStyle = '#5c3a21';
+    cx.font = 'italic 20px Marcellus, serif';
+    cx.fillText(appState.greetingMessage, 60, 420);
+
+    cx.fillStyle = '#78350f';
+    cx.font = '18px Marcellus, serif';
+    cx.fillText('Yours Lovingly,', 60, 640);
+    cx.font = 'bold 28px Great Vibes, cursive';
+    cx.fillText(appState.senderName, 60, 680);
+
+    // Decorative Diya on export
+    cx.fillStyle = '#facc15';
+    cx.beginPath();
+    cx.arc(c.width - 240, 480, 25, 0, Math.PI * 2);
+    cx.fill();
+
+    const link = document.createElement('a');
+    link.download = `Diwali_Greeting_${Date.now()}.png`;
+    link.href = c.toDataURL('image/png');
+    link.click();
+    showToast("Diwali greeting card downloaded! 🪔");
+  }
+
+  // Start the default background soundtrack. If autoplay is blocked,
+  // retry after the visitor's first interaction (required by many browsers).
+  updateAudioTrack();
+  document.addEventListener('pointerdown', function startBackgroundMusic() {
+    if (appState.soundEnabled) updateAudioTrack();
+    document.removeEventListener('pointerdown', startBackgroundMusic);
+  }, { once: true });
+
+  // Initialize Lucide icons
+  if (window.lucide) {
+    lucide.createIcons();
+  }
+</script>
+</body>
+</html>
